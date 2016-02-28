@@ -1,6 +1,6 @@
 <?php
 
-Route::any(Config::get('swaggervel.doc-route').'/{page?}', function($page='api-docs.json') {
+Route::any(Config::get('swaggervel.doc-route').'/{page?}', ['as' => 'swagger.docs', function($page='api-docs.json') {
     $filePath = Config::get('swaggervel.doc-dir') . "/{$page}";
 
     if (File::extension($filePath) === "") {
@@ -14,9 +14,9 @@ Route::any(Config::get('swaggervel.doc-route').'/{page?}', function($page='api-d
     return Response::make($content, 200, array(
         'Content-Type' => 'application/json'
     ));
-});
+}]);
 
-Route::get(Config::get('swaggervel.api-docs-route'), function() {
+Route::get(Config::get('swaggervel.api-docs-route'), ['as' => 'swagger.ui', function() {
     if (Config::get('swaggervel.generateAlways')) {
         $appDir = base_path()."/".Config::get('swaggervel.app-dir');
         $docDir = Config::get('swaggervel.doc-dir');
@@ -80,4 +80,4 @@ Route::get(Config::get('swaggervel.api-docs-route'), function() {
     }
 
     return $response;
-});
+}]);
