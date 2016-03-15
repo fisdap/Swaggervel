@@ -31,6 +31,10 @@ class SwaggervelServiceProvider extends ServiceProvider {
         $this->publishes([
             __DIR__.'/../../views' => base_path('resources/views/vendor/swaggervel'),
         ]);
+
+        if (! $this->app->routesAreCached()) {
+            require __DIR__ .'/routes.php';
+        }
     }
     /**
      * Register the service provider.
@@ -42,8 +46,6 @@ class SwaggervelServiceProvider extends ServiceProvider {
         $this->mergeConfigFrom(
             __DIR__.'/../../config/swaggervel.php', 'swaggervel'
         );
-
-        require_once __DIR__ .'/routes.php';
     }
 
 }
