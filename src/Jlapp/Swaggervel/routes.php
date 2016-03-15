@@ -1,5 +1,8 @@
 <?php
 
+use Fisdap\BuildMetadata\BuildMetadata;
+
+
 Route::any(Config::get('swaggervel.doc-route').'/{page?}', ['as' => 'swagger.docs', function($page='api-docs.json') {
     $filePath = Config::get('swaggervel.doc-dir') . "/{$page}";
 
@@ -36,7 +39,14 @@ Route::get(Config::get('swaggervel.api-docs-route'), ['as' => 'swagger.ui', func
 
             $swagger =  \Swagger\scan($appDir, [
                 'exclude' => $excludeDirs
-                ]);
+            ]);
+
+            if (class_exists(BuildMetadata::class)) {
+                $build = new BuildMetadata();
+                $build->load();
+
+                $swagger->info->version = $build->projectVersion;
+            }
 
             $filename = $docDir . '/api-docs.json';
             file_put_contents($filename, $swagger);
@@ -53,13 +63,13 @@ Route::get(Config::get('swaggervel.api-docs-route'), ['as' => 'swagger.ui', func
 
     //need the / at the end to avoid CORS errors on Homestead systems.
     $response = response()->view('swaggervel::index', array(
-        'secure'         => Request::secure(),
-        'urlToDocs'      => url(Config::get('swaggervel.doc-route')),
-        'requestHeaders' => Config::get('swaggervel.requestHeaders'),
-        'clientId'       => Request::input("client_id"),
-        'clientSecret'   => Request::input("client_secret"),
-        'realm'          => Request::input("realm"),
-        'appName'        => Request::input("appName"),
+            'secure'         => Request::secure(),
+            'urlToDocs'      => url(Config::get('swaggervel.doc-route')),
+            'requestHeaders' => Config::get('swaggervel.requestHeaders'),
+            'clientId'       => Request::input("client_id"),
+            'clientSecret'   => Request::input("client_secret"),
+            'realm'          => Request::input("realm"),
+            'appName'        => Request::input("appName"),
         )
     );
 
